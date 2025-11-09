@@ -27,6 +27,7 @@
             <th>Tamanho</th>
             <th>Cor</th>
             <th>Genero</th>
+            <th>Valor</th>            
             <th>Marca</th>
             <th>Tipo</th>
             <th>Ações</th>
@@ -40,6 +41,7 @@
             <td>{{ $Produto->Tamanho ?? '—' }}</td>
             <td>{{ $Produto->Cor ?? '—' }}</td>
             <td>{{ $Produto->Genero ?? '—' }}</td>
+            <td>{{ $Produto->Valor ?? '—' }}</td>
             <td>{{ $Produto->Marca->Nome ?? '—' }}</td>
             <td>{{ $Produto->Tipo->Nome ?? '—' }}</td>
             <td class="d-flex gap-2">

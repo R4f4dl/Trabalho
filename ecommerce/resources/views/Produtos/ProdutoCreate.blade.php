@@ -50,6 +50,13 @@
             </select>
         </div>
 
+        {{-- Valor --}}
+        <div class="form-group">
+            <label for="Valor">Valor do Produto</label>
+            <input type="number" step="0.01" name="Valor" class="form-control" value="{{ old('Valor', $Produto->Valor ?? '') }}" required>
+        </div>
+
+
         {{-- Select de Marca --}}
         <label for="id_marca">Marca</label>
         <select name="id_marca" id="id_marca" class="form-control">

@@ -16,6 +16,7 @@ class Produto extends Model
         'Genero',
         'id_marca',
         'id_tipo',
+        'Valor',
         'imagem'
     ];
 
@@ -34,4 +35,11 @@ class Produto extends Model
     {
         return $this->belongsTo(Tipo::class, 'id_tipo');
     }
+
+
+    public function estoque()
+    {
+        return $this->hasOne(Estoque::class, 'id_produtos');
+    }
+
 }

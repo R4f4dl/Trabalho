@@ -6,6 +6,17 @@ use App\Http\Controllers\TipoController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProdutoController;
 
+use App\Http\Controllers\PrimeiraController;
+
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CarrinhoController;
+use App\Http\Controllers\InicialCliController;
+
+use App\Http\Middleware\NivelAdmMiddleware;
+use App\Http\Middleware\NivelCliMiddleware;
+
+
 Route::get('/', [HomeController::class,'index'])->name('Index');
 
 Route::get('/Tipo', [TipoController::class,'index'])->name('Tipo.index');
@@ -31,3 +42,42 @@ Route::get('/Produto/{Produto}', [ProdutoController::class,'show'])->name('Produ
 Route::get('/Produto/{Produto}/edit', [ProdutoController::class,'edit'])->name('Produto.edit');
 Route::put('/Produto/{Produto}', [ProdutoController::class,'update'])->name('Produto.update');
 Route::delete('/Produto/{Produto}', [ProdutoController::class,'destroy'])->name('Produto.destroy');
+
+use App\Http\Controllers\EstoqueController;
+
+Route::get('/Estoque', [EstoqueController::class,'index'])->name('Estoque.index');
+Route::get('/Estoque/create', [EstoqueController::class,'create'])->name('Estoque.create');
+Route::post('/Estoque', [EstoqueController::class,'store'])->name('Estoque.store');
+Route::get('/Estoque/{estoque}', [EstoqueController::class,'show'])->name('Estoque.show');
+Route::get('/Estoque/{estoque}/edit', [EstoqueController::class,'edit'])->name('Estoque.edit');
+Route::put('/Estoque/{estoque}', [EstoqueController::class,'update'])->name('Estoque.update');
+Route::delete('/Estoque/{estoque}', [EstoqueController::class,'destroy'])->name('Estoque.destroy');
+
+
+
+Route::get('/Carrinho', [CarrinhoController::class, 'mostrarProdutos'])->name('Carrinho.index');
+
+Route::get('/login', [AuthController::class, 'showFormLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/cadastrar', [AuthController::class, 'showFormCadastro']);
+Route::post('/cadastrar', [AuthController::class, 'cadastrarUsuario']);
+
+Route::middleware('auth')->group(function (){
+    Route::post("/logout", [AuthController::class, "logout"]);
+
+    Route::middleware([NivelAdmMiddleware::class])->group(function () {
+        Route::resource('clientes', ClienteController::class);
+        Route::get('/inicial-adm', function() { return view("inicial-adm"); });
+    });
+
+    Route::middleware([NivelCliMiddleware::class])->group(function () {
+        Route::get('/inicial-cli', [InicialCliController::class, 'index']);
+        Route::get('/carrinho/add/{id}', 
+                        [CarrinhoController::class, 'adicionarCarrinho']);
+        Route::get('/carrinho/remove/{id}', 
+                        [CarrinhoController::class, 'removerCarrinho']);
+        Route::get('/carrinho/fechar', 
+                        [CarrinhoController::class, 'fecharPedido']);
+    });
+    
+});

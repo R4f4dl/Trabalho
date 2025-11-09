@@ -56,6 +56,7 @@ class ProdutoController
             'Tamanho' => 'required|string', // se for enum, valide com in:PP,P,M,...
             'Cor' => 'required|string|max:400',
             'Genero' => 'required|string',
+            'Valor' => 'required|numeric|min:0',
             'id_marca' => 'required|exists:marcas,id',
             'id_tipo' => 'required|exists:tipo,id',
             // validação de imagem (opcional): é um arquivo de imagem e max 2MB
@@ -67,7 +68,7 @@ class ProdutoController
 
         try {
             // montar os dados base do produto
-            $data = $request->only(['Tamanho', 'Cor', 'Genero', 'id_marca', 'id_tipo','imagem']);
+            $data = $request->only(['Tamanho', 'Cor', 'Genero','Valor', 'id_marca', 'id_tipo','imagem']);
 
             $produto = Produto::create($data);
 
@@ -111,6 +112,7 @@ class ProdutoController
         'Tamanho' => $request->Tamanho,
         'Cor' => $request->Cor,
         'Genero' => $request->Genero,
+        'Valor' => $request->Valor,
         'id_marca' => $request->id_marca,
         'id_tipo' => $request->id_tipo,
         'imagem' => $request->imagem,
