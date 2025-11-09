@@ -39,7 +39,7 @@ class AuthController extends Controller{
             $request->session()->regenerate();
             $user = Auth::user();
             if ($user->nivel == "ADM"){
-                return redirect()->intended("/inicial-adm");
+            return redirect()->route('adm.index');
             } elseif ($user->nivel == "CLI"){
                 return redirect()->intended("/inicial-cli");
             }

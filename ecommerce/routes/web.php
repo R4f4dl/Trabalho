@@ -67,7 +67,8 @@ Route::middleware('auth')->group(function (){
 
     Route::middleware([NivelAdmMiddleware::class])->group(function () {
         Route::resource('clientes', ClienteController::class);
-        Route::get('/inicial-adm', function() { return view("inicial-adm"); });
+        Route::get('/inicial-adm', [HomeController::class, 'index'])->name('adm.index');
+
     });
 
     Route::middleware([NivelCliMiddleware::class])->group(function () {
