@@ -97,7 +97,8 @@
                 <tbody>
                   @foreach($pedido->itens as $item)
                     <tr>
-                      <td>Produto #{{ $item->produto->id ?? $item->produtos_id }}</td>
+                      @php $itemTitle = trim((($item->produto->marca->Nome ?? '') . ' ' . ($item->produto->tipo->Nome ?? ''))); @endphp
+                      <td>{{ $itemTitle ?: 'Produto' }}</td>
                       <td>R${{ number_format($item->preco ?? 0, 2, ',', '.') }}</td>
                       <td>{{ $item->quantidade }}</td>
                       <td>R${{ number_format(($item->preco ?? 0) * ($item->quantidade ?? 0), 2, ',', '.') }}</td>
@@ -127,64 +128,76 @@
 
     <h2 id="produtos" class="mb-4 text-center fw-semibold">Nossos Produtos</h2>
 
-    <!-- Filtro de produtos -->
-    <div class="mb-4">
-      <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end">
-        <div class="col-md-2">
-          <label class="form-label">Tamanho</label>
-          <input type="text" name="tamanho" value="{{ request('tamanho') }}" class="form-control" placeholder="Ex: M, G">
+    <div class="row">
+      <aside class="col-md-3">
+        <div class="card p-3 mb-4">
+          <h5 class="mb-3">Filtrar</h5>
+          <form method="GET" action="{{ url()->current() }}">
+            <div class="mb-2">
+              <label class="form-label">Tamanho</label>
+              <select name="tamanho" class="form-select">
+                <option value="">Todos</option>
+                @if(isset($tamanhos))
+                  @foreach($tamanhos as $tam)
+                    <option value="{{ $tam }}" {{ request('tamanho') == $tam ? 'selected' : '' }}>{{ $tam }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Cor</label>
+              <input type="text" name="cor" value="{{ request('cor') }}" class="form-control" placeholder="Ex: Preto">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Gênero</label>
+              <select name="genero" class="form-select">
+                <option value="">Todos</option>
+                <option value="Masculino" {{ request('genero')=='Masculino' ? 'selected' : '' }}>Masculino</option>
+                <option value="Feminino" {{ request('genero')=='Feminino' ? 'selected' : '' }}>Feminino</option>
+                <option value="Unissex" {{ request('genero')=='Unissex' ? 'selected' : '' }}>Unissex</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Marca</label>
+              <select name="marca" class="form-select">
+                <option value="">Todas</option>
+                @if(isset($marcas))
+                  @foreach($marcas as $m)
+                    <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Tipo</label>
+              <select name="tipo" class="form-select">
+                <option value="">Todos</option>
+                @if(isset($tipos))
+                  @foreach($tipos as $t)
+                    <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Preço (faixa)</label>
+              <select name="base_valor" class="form-select">
+                <option value="">Qualquer</option>
+                <option value="0-50" {{ request('base_valor')=='0-50' ? 'selected' : '' }}>0 - 50</option>
+                <option value="50-100" {{ request('base_valor')=='50-100' ? 'selected' : '' }}>50 - 100</option>
+                <option value="100-200" {{ request('base_valor')=='100-200' ? 'selected' : '' }}>100 - 200</option>
+                <option value="200+" {{ request('base_valor')=='200+' ? 'selected' : '' }}>200+</option>
+              </select>
+            </div>
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+              <a href="{{ url()->current() }}" class="btn btn-link">Limpar</a>
+            </div>
+          </form>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Cor</label>
-          <input type="text" name="cor" value="{{ request('cor') }}" class="form-control" placeholder="Ex: Preto">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Gênero</label>
-          <select name="genero" class="form-select">
-            <option value="">Todos</option>
-            <option value="Masculino" {{ request('genero')=='Masculino' ? 'selected' : '' }}>Masculino</option>
-            <option value="Feminino" {{ request('genero')=='Feminino' ? 'selected' : '' }}>Feminino</option>
-            <option value="Unissex" {{ request('genero')=='Unissex' ? 'selected' : '' }}>Unissex</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Marca</label>
-          <select name="marca" class="form-select">
-            <option value="">Todas</option>
-            @if(isset($marcas))
-              @foreach($marcas as $m)
-                <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
-              @endforeach
-            @endif
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Tipo</label>
-          <select name="tipo" class="form-select">
-            <option value="">Todos</option>
-            @if(isset($tipos))
-              @foreach($tipos as $t)
-                <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
-              @endforeach
-            @endif
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Base de Valor</label>
-          <select name="base_valor" class="form-select">
-            <option value="">Qualquer</option>
-            <option value="0-50" {{ request('base_valor')=='0-50' ? 'selected' : '' }}>0 - 50</option>
-            <option value="50-100" {{ request('base_valor')=='50-100' ? 'selected' : '' }}>50 - 100</option>
-            <option value="100-200" {{ request('base_valor')=='100-200' ? 'selected' : '' }}>100 - 200</option>
-            <option value="200+" {{ request('base_valor')=='200+' ? 'selected' : '' }}>200+</option>
-          </select>
-        </div>
-        <div class="col-12 text-end mt-2">
-          <button type="submit" class="btn btn-primary">Aplicar filtro</button>
-          <a href="{{ url()->current() }}" class="btn btn-link">Limpar</a>
-        </div>
-      </form>
-    </div>
+      </aside>
+
+      <div class="col-md-9">
 
     @if(isset($produtos) && count($produtos))
       <div class="row g-4">
@@ -193,14 +206,13 @@
             <div class="card h-100 shadow-sm">
               <img src="{{ $p->first_image ?? 'https://via.placeholder.com/300x200' }}" class="card-img-top" alt="Imagem do produto">
               <div class="card-body text-center">
-                <h5 class="card-title">Produto #{{ $p->id }}</h5>
-                <p class="card-text text-muted mb-1">R${{ number_format($p->Valor ?? 0, 2, ',', '.') }}</p>
+                <p class="card-text text-primary mb-1 fs-5 fw-bold">R${{ number_format($p->Valor ?? 0, 2, ',', '.') }}</p>
                 <p class="card-text">
                   <small>Tamanho: {{ $p->Tamanho ?? 'N/A' }}</small>
                   <small>Cor: {{ $p->Cor ?? 'N/A' }}</small>
                   <small>Gênero: {{ $p->Genero ?? 'N/A' }}</small>
-                  <small>Marca: {{ $p->marca->Nome ?? 'N/A' }}</small>
-                  <small>Tipo: {{ $p->tipo->Nome ?? 'N/A' }}</small>
+                  <small class="d-block">Tipo: {{ $p->tipo->Nome ?? 'N/A' }}</small>
+                  <small class="d-block fw-semibold">{{ $p->marca->Nome ?? 'N/A' }}</small>
                 </p>
                 <a href="/carrinho/add/{{ $p->id }}" class="btn btn-outline-primary mt-2">Comprar</a>
               </div>
@@ -211,6 +223,9 @@
     @else
       <p class="text-center text-muted">Nenhum produto disponível no momento.</p>
     @endif
+
+      </div> <!-- /.col-md-9 -->
+    </div> <!-- /.row -->
 
   </div>
 </section>

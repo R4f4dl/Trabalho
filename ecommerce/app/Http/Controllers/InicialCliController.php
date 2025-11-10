@@ -69,7 +69,16 @@ class InicialCliController extends Controller
 
         $marcas = Marca::all();
         $tipos = Tipo::all();
+        $tamanhos = Produto::select('Tamanho')
+            ->whereNotNull('Tamanho')
+            ->distinct()
+            ->pluck('Tamanho');
 
-        return view('inicial-cli', compact('pedido', 'produtos', 'marcas', 'tipos'));
+        $cores = Produto::select('Cor')
+            ->whereNotNull('Cor')
+            ->distinct()
+            ->pluck('Cor');
+
+        return view('inicial-cli', compact('pedido', 'produtos', 'marcas', 'tipos', 'tamanhos', 'cores'));
     }
 }

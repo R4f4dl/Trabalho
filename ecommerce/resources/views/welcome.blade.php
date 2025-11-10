@@ -80,12 +80,154 @@
 </nav>
 
 <!-- Hero Section -->
-<header class="bg-light py-5 text-center">
+<header class="bg-light py-4">
   <div class="container">
-    <h1 class="fw-bold">Bem-vindo à Minha Loja!</h1>
-    <p class="lead">Os melhores produtos com os melhores preços</p>
-    <a href="#produtos" class="btn btn-primary btn-lg">Ver Ofertas</a>
+    <div class="row align-items-center">
+      <!-- Filters on the left for md+; mobile shows a button that opens a modal -->
+      <div class="col-md-4">
+        <div class="d-none d-md-block">
+          <div class="card p-3">
+            <h6 class="mb-2">Filtrar produtos</h6>
+            <form method="GET" action="{{ url()->current() }}">
+              <div class="mb-2">
+                <select name="tamanho" class="form-select form-select-sm">
+                  <option value="">Tamanho</option>
+                  @if(isset($tamanhos))
+                    @foreach($tamanhos as $tam)
+                      <option value="{{ $tam }}" {{ request('tamanho') == $tam ? 'selected' : '' }}>{{ $tam }}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
+              <div class="mb-2">
+                <select name="cor" class="form-select form-select-sm">
+                  <option value="">Cor</option>
+                  @if(isset($cores))
+                    @foreach($cores as $c)
+                      <option value="{{ $c }}" {{ request('cor') == $c ? 'selected' : '' }}>{{ $c }}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
+              <div class="mb-2">
+                <select name="tipo" class="form-select form-select-sm">
+                  <option value="">Tipo</option>
+                  @if(isset($tipos))
+                    @foreach($tipos as $t)
+                      <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
+              <div class="mb-2">
+                <select name="marca" class="form-select form-select-sm">
+                  <option value="">Marca</option>
+                  @if(isset($marcas))
+                    @foreach($marcas as $m)
+                      <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input type="number" step="0.01" name="preco_min" value="{{ request('preco_min') }}" class="form-control form-control-sm" placeholder="Mínimo">
+                </div>
+                <div class="col-6">
+                  <input type="number" step="0.01" name="preco_max" value="{{ request('preco_max') }}" class="form-control form-control-sm" placeholder="Máximo">
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-2">
+                <button type="submit" class="btn btn-sm btn-primary">Aplicar</button>
+                <a href="{{ url()->current() }}" class="btn btn-sm btn-link">Limpar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Mobile filter button -->
+        <div class="d-md-none text-start mb-2">
+          <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+        </div>
+      </div>
+
+      <div class="col-md-8 text-center text-md-start">
+        <h1 class="fw-bold mb-1">Bem-vindo à Minha Loja!</h1>
+        <p class="lead mb-2">Os melhores produtos com os melhores preços</p>
+        <a href="#produtos" class="btn btn-primary btn-lg">Ver Ofertas</a>
+      </div>
+    </div>
   </div>
+
+  <!-- Modal for mobile filters -->
+  <div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filtrar produtos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <form method="GET" action="{{ url()->current() }}">
+            <div class="mb-2">
+              <select name="tamanho" class="form-select">
+                <option value="">Tamanho</option>
+                @if(isset($tamanhos))
+                  @foreach($tamanhos as $tam)
+                    <option value="{{ $tam }}" {{ request('tamanho') == $tam ? 'selected' : '' }}>{{ $tam }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <select name="cor" class="form-select">
+                <option value="">Cor</option>
+                @if(isset($cores))
+                  @foreach($cores as $c)
+                    <option value="{{ $c }}" {{ request('cor') == $c ? 'selected' : '' }}>{{ $c }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <select name="tipo" class="form-select">
+                <option value="">Tipo</option>
+                @if(isset($tipos))
+                  @foreach($tipos as $t)
+                    <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="mb-2">
+              <select name="marca" class="form-select">
+                <option value="">Marca</option>
+                @if(isset($marcas))
+                  @foreach($marcas as $m)
+                    <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
+                  @endforeach
+                @endif
+              </select>
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <input type="number" step="0.01" name="preco_min" value="{{ request('preco_min') }}" class="form-control" placeholder="Mínimo">
+              </div>
+              <div class="col-6">
+                <input type="number" step="0.01" name="preco_max" value="{{ request('preco_max') }}" class="form-control" placeholder="Máximo">
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Aplicar</button>
+            <a href="{{ url()->current() }}" class="btn btn-link">Limpar</a>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </header>
 
 <!-- Produtos -->
@@ -93,68 +235,11 @@
   <div class="container">
     <h2 class="mb-4 text-center fw-semibold">Nossos Produtos</h2>
 
-    <!-- Filtro de produtos -->
-    <div class="mb-4">
-      <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end">
-        <div class="col-md-2">
-          <label class="form-label">Tamanho</label>
-          <input type="text" name="tamanho" value="{{ request('tamanho') }}" class="form-control" placeholder="Ex: M, G">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Cor</label>
-          <input type="text" name="cor" value="{{ request('cor') }}" class="form-control" placeholder="Ex: Preto">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Gênero</label>
-          <select name="genero" class="form-select">
-            <option value="">Todos</option>
-            <option value="Masculino" {{ request('genero')=='Masculino' ? 'selected' : '' }}>Masculino</option>
-            <option value="Feminino" {{ request('genero')=='Feminino' ? 'selected' : '' }}>Feminino</option>
-            <option value="Unissex" {{ request('genero')=='Unissex' ? 'selected' : '' }}>Unissex</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Marca</label>
-          <select name="marca" class="form-select">
-            <option value="">Todas</option>
-            @if(isset($marcas))
-              @foreach($marcas as $m)
-                <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
-              @endforeach
-            @endif
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Tipo</label>
-          <select name="tipo" class="form-select">
-            <option value="">Todos</option>
-            @if(isset($tipos))
-              @foreach($tipos as $t)
-                <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
-              @endforeach
-            @endif
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Base de Valor</label>
-          <select name="base_valor" class="form-select">
-            <option value="">Qualquer</option>
-            <option value="0-50" {{ request('base_valor')=='0-50' ? 'selected' : '' }}>0 - 50</option>
-            <option value="50-100" {{ request('base_valor')=='50-100' ? 'selected' : '' }}>50 - 100</option>
-            <option value="100-200" {{ request('base_valor')=='100-200' ? 'selected' : '' }}>100 - 200</option>
-            <option value="200+" {{ request('base_valor')=='200+' ? 'selected' : '' }}>200+</option>
-          </select>
-        </div>
-        <div class="col-12 text-end mt-2">
-          <button type="submit" class="btn btn-primary">Aplicar filtro</button>
-          <a href="{{ url()->current() }}" class="btn btn-link">Limpar</a>
-        </div>
-      </form>
-    </div>
+    
 
     @if(isset($produtos) && count($produtos))
       <div class="row g-4" id="products-grid">
-        @foreach($produtos as $p)
+                @foreach($produtos as $p)
           <div class="col-sm-6 col-md-4 col-lg-3 {{ $loop->index >= 4 ? 'more-product d-none' : '' }}">
             <div class="card h-100 shadow-sm">
               @php
@@ -176,14 +261,13 @@
                 @endif
               </div>
               <div class="card-body text-center">
-                <h5 class="card-title">Produto #{{ $p->id }}</h5>
-                <p class="card-text text-muted mb-1">R${{ number_format($p->Valor ?? 0, 2, ',', '.') }}</p>
+                <p class="card-text text-primary mb-1 fs-5 fw-bold">R${{ number_format($p->Valor ?? 0, 2, ',', '.') }}</p>
                 <p class="card-text">
                   <small>Tamanho: {{ $p->Tamanho ?? 'N/A' }}</small>
                   <small>Cor: {{ $p->Cor ?? 'N/A' }}</small>
                   <small>Gênero: {{ $p->Genero ?? 'N/A' }}</small>
-                  <small>Marca: {{ $p->marca->Nome ?? 'N/A' }}</small>
-                  <small>Tipo: {{ $p->tipo->Nome ?? 'N/A' }}</small>
+                  <small class="d-block">Tipo: {{ $p->tipo->Nome ?? 'N/A' }}</small>
+                  <small class="d-block fw-semibold">{{ $p->marca->Nome ?? 'N/A' }}</small>
                 </p>
                 @auth
                   <a href="/carrinho/add/{{ $p->id }}" class="btn btn-outline-primary mt-2">Comprar</a>
@@ -205,6 +289,7 @@
       <p class="text-center text-muted">Nenhum produto disponível no momento.</p>
     @endif
 
+  
   </div>
 </section>
 

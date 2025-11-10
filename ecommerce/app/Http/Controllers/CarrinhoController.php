@@ -73,8 +73,16 @@ class CarrinhoController extends Controller
 
         $marcas = Marca::all();
         $tipos = Tipo::all();
+        $tamanhos = Produto::select('Tamanho')
+            ->whereNotNull('Tamanho')
+            ->distinct()
+            ->pluck('Tamanho');
+        $cores = Produto::select('Cor')
+            ->whereNotNull('Cor')
+            ->distinct()
+            ->pluck('Cor');
 
-        return view('welcome', compact('produtos', 'marcas', 'tipos'));
+        return view('welcome', compact('produtos', 'marcas', 'tipos', 'tamanhos', 'cores'));
     }
 
     /**
@@ -138,8 +146,17 @@ class CarrinhoController extends Controller
 
         $marcas = Marca::all();
         $tipos = Tipo::all();
+        $tamanhos = Produto::select('Tamanho')
+            ->whereNotNull('Tamanho')
+            ->distinct()
+            ->pluck('Tamanho');
 
-        return view('cart', compact('pedido', 'produtos', 'marcas', 'tipos'));
+        $cores = Produto::select('Cor')
+            ->whereNotNull('Cor')
+            ->distinct()
+            ->pluck('Cor');
+
+        return view('cart', compact('pedido', 'produtos', 'marcas', 'tipos', 'tamanhos', 'cores'));
     }
 
     /**
