@@ -17,7 +17,14 @@ use App\Http\Middleware\NivelAdmMiddleware;
 use App\Http\Middleware\NivelCliMiddleware;
 
 
-Route::get('/', [HomeController::class,'index'])->name('Index');
+Route::get('/Home', [HomeController::class,'index'])->name('Index');
+
+// backwards-compatible redirects (URLs with /Produto -> /produto)
+Route::redirect('/Produto', '/produto');
+Route::redirect('/Produto/create', '/produto/create');
+Route::get('/Produto/{any}', function ($any) {
+    return redirect('/produto/' . $any);
+})->where('any', '.*');
 
 Route::get('/Tipo', [TipoController::class,'index'])->name('Tipo.index');
 Route::get('/Tipo/create', [TipoController::class,'create'])->name('Tipo.create');
@@ -35,13 +42,15 @@ Route::get('/Marca/{Marca}/edit', [MarcaController::class,'edit'])->name('Marca.
 Route::put('/Marca/{Marca}', [MarcaController::class,'update'])->name('Marca.update');
 Route::delete('/Marca/{Marca}', [MarcaController::class,'destroy'])->name('Marca.destroy');
 
-Route::get('/Produto', [ProdutoController::class,'index'])->name('Produto.index');
-Route::get('/Produto/create', [ProdutoController::class,'create'])->name('Produto.create');
-Route::post('/Produto', [ProdutoController::class,'store'])->name('Produto.store');
-Route::get('/Produto/{Produto}', [ProdutoController::class,'show'])->name('Produto.show');
-Route::get('/Produto/{Produto}/edit', [ProdutoController::class,'edit'])->name('Produto.edit');
-Route::put('/Produto/{Produto}', [ProdutoController::class,'update'])->name('Produto.update');
-Route::delete('/Produto/{Produto}', [ProdutoController::class,'destroy'])->name('Produto.destroy');
+Route::get('/produto', [ProdutoController::class,'index'])->name('Produto.index');
+Route::get('/produto/create', [ProdutoController::class,'create'])->name('Produto.create');
+Route::post('/produto', [ProdutoController::class,'store'])->name('Produto.store');
+Route::get('/produto/{Produto}', [ProdutoController::class,'show'])->name('Produto.show');
+Route::get('/produto/{Produto}/edit', [ProdutoController::class,'edit'])->name('Produto.edit');
+Route::put('/produto/{Produto}', [ProdutoController::class,'update'])->name('Produto.update');
+Route::delete('/produto/{Produto}', [ProdutoController::class,'destroy'])->name('Produto.destroy');
+// Remove a single image from a product (index passed in POST)
+Route::post('/produto/{Produto}/remove-image', [ProdutoController::class, 'removeImage'])->name('Produto.removeImage');
 
 use App\Http\Controllers\EstoqueController;
 
@@ -55,7 +64,7 @@ Route::delete('/Estoque/{estoque}', [EstoqueController::class,'destroy'])->name(
 
 
 
-Route::get('/Carrinho', [CarrinhoController::class, 'mostrarProdutos'])->name('Carrinho.index');
+Route::get('/', [CarrinhoController::class, 'mostrarProdutos'])->name('Carrinho.index');
 
 Route::get('/login', [AuthController::class, 'showFormLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -72,7 +81,10 @@ Route::middleware('auth')->group(function (){
     });
 
     Route::middleware([NivelCliMiddleware::class])->group(function () {
-        Route::get('/inicial-cli', [InicialCliController::class, 'index']);
+        Route::get('/inicial-cli', [InicialCliController::class, 'clindex']);
+        // rota para visualizar o carrinho explicitamente
+    Route::get('/carrinho', [\App\Http\Controllers\CarrinhoController::class, 'mostrarCarrinho'])->name('carrinho.index');
+    Route::get('/carrinho/limpar', [\App\Http\Controllers\CarrinhoController::class, 'esvaziarCarrinho']);
         Route::get('/carrinho/add/{id}', 
                         [CarrinhoController::class, 'adicionarCarrinho']);
         Route::get('/carrinho/remove/{id}', 

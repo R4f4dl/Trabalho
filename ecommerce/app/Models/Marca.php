@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Marca extends Model
 {
-    protected $table = 'Marcas'; // Nome da tabela no banco
+    // A tabela no banco geralmente está em lowercase; alinhar para evitar ambiguidades
+    protected $table = 'marcas'; // Nome da tabela no banco
     public $incrementing = true;
     
     protected $fillable = ['Nome'];

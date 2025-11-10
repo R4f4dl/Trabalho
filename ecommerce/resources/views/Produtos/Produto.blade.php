@@ -37,7 +37,13 @@
         @foreach ($produtos as $Produto)
         <tr>
             <td>{{ $Produto->id }}</td>
-            <td>{{ $Produto->Imagem ?? '—' }}</td>    
+            <td>
+                @if($Produto->first_image)
+                    <img src="{{ $Produto->first_image }}" alt="thumb" style="max-width:80px; max-height:60px; object-fit:cover;" />
+                @else
+                    —
+                @endif
+            </td>    
             <td>{{ $Produto->Tamanho ?? '—' }}</td>
             <td>{{ $Produto->Cor ?? '—' }}</td>
             <td>{{ $Produto->Genero ?? '—' }}</td>

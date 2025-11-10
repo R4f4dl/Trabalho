@@ -3,9 +3,21 @@
 @section('conteudo')
 
 <h1>Alterar Produto</h1>
-<form method="POST" action="{{ route('Produto.update', ['Produto' => $Produto->id]) }}">
-    @CSRF
-    @METHOD('PUT')
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+<form method="POST" action="{{ route('Produto.update', ['Produto' => $Produto->id]) }}" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
     <a href="{{ route('Produto.index')}}" class="btn btn-success mb-3">Novo Registro</a>
 
 
@@ -27,6 +39,11 @@
         <div class="form-group">
             <label for="Cor">Cor:</label>
             <input value="{{ $Produto->Cor ?? '—' }}" name="Cor" id="Cor" type="text" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="Valor">Valor (R$):</label>
+            <input value="{{ old('Valor', $Produto->Valor ?? '') }}" name="Valor" id="Valor" type="text" class="form-control" placeholder="0.00">
         </div>
 
         {{-- Gênero --}}
@@ -66,22 +83,39 @@
         </div> 
 
 
-        {{-- Upload de imagens (múltiplas) --}}
+        {{-- Upload de imagens (múltiplas) e substituição individual --}}
         <div class="form-group">
-            <label for="imagem">Imagens</label>
-            <input type="file" name="imagem[]" id="imagem" class="form-control" multiple accept="image/*">
-            <small class="form-text text-muted">Máx 5 imagens, 4MB cada (configurado no controller).</small>
+            <label for="imagens">Adicionar novas imagens (até completar 3)</label>
+            <input type="file" name="imagens[]" id="imagens" class="form-control" multiple accept="image/*">
+            <small class="form-text text-muted">Máx 3 imagens no total, 4MB cada. Você também pode substituir imagens existentes abaixo.</small>
 
-            @if(!empty($Produto->imagens))
-                <div class="mt-2">
-                    <label>Imagens atuais:</label>
+            @if(!empty($Produto->imagem) && is_array($Produto->imagem))
+                <div class="mt-3">
+                    <label>Imagens atuais (clique em "Substituir" para trocar uma imagem específica):</label>
                     <div class="d-flex flex-wrap">
-                        @foreach($Produto->imagens as $img)
-                            <div class="me-2 mb-2">
-                                <img src="{{ asset('storage/'.$img) }}" alt="Imagem do Produto" style="width: 100px; height: auto; border:1px solid #ccc; padding:2px;">
+                        @foreach($Produto->imagem as $idx => $img)
+                            <div class="me-2 mb-3" style="text-align:center;">
+                                <img src="{{ $img }}" alt="Imagem do Produto" style="width: 120px; height: auto; border:1px solid #ccc; padding:4px; display:block; margin-bottom:6px;">
+                                <div style="display:flex; gap:6px; justify-content:center;">
+                                    <label class="btn btn-sm btn-outline-primary" style="display:inline-block;">
+                                        Substituir
+                                        <input type="file" name="imagens_replace[{{ $idx }}]" style="display:none;" accept="image/*">
+                                    </label>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="if(confirm('Remover esta imagem?')) submitRemoveImage({{ $idx }})">Remover</button>
+                                </div>
+                                <div style="font-size:12px; color:#666; margin-top:4px;">Posição #{{ $idx + 1 }}</div>
                             </div>
                         @endforeach
                     </div>
+                </div>
+            @elseif(!empty($Produto->imagem))
+                <div class="mt-2">
+                    <img src="{{ $Produto->imagem }}" alt="Imagem do Produto" style="width: 120px; height: auto; border:1px solid #ccc; padding:4px; display:block; margin-bottom:6px;">
+                    <label class="btn btn-sm btn-outline-primary">
+                        Substituir
+                        <input type="file" name="imagens_replace[0]" style="display:none;" accept="image/*">
+                    </label>
                 </div>
             @endif
         </div>
@@ -90,3 +124,31 @@
 
 
 @endsection
+
+@push('scripts')
+<script>
+function submitRemoveImage(index) {
+    const action = "{{ route('Produto.removeImage', ['Produto' => $Produto->id]) }}";
+    const token = "{{ csrf_token() }}";
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = action;
+    form.style.display = 'none';
+
+    const inputToken = document.createElement('input');
+    inputToken.type = 'hidden';
+    inputToken.name = '_token';
+    inputToken.value = token;
+    form.appendChild(inputToken);
+
+    const inputIndex = document.createElement('input');
+    inputIndex.type = 'hidden';
+    inputIndex.name = 'index';
+    inputIndex.value = index;
+    form.appendChild(inputIndex);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+@endpush

@@ -77,9 +77,9 @@
 
         {{-- Upload de imagens (múltiplas) --}}
         <div class="form-group">
-            <label for="imagem">Imagens (pode selecionar várias)</label>
-            <input type="file" name="imagem" id="imagem" class="form-control" multiple accept="image/*">
-            <small class="form-text text-muted">Máx 5 imagens, 4MB cada (configurado no controller).</small>
+            <label for="imagens">Imagens (até 3)</label>
+            <input type="file" name="imagens[]" id="imagens" class="form-control" multiple accept="image/*">
+            <small class="form-text text-muted">Máx 3 imagens, 4MB cada.</small>
         </div>
 
         {{-- Se quiser, campos alt para cada imagem (opcional): você teria que enviar via JS ou inputs adicionais --}}

@@ -42,48 +42,39 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="{{ url('/inicial-cli') }}">Minha Loja</a>
+    <a class="navbar-brand fw-bold" href="{{ url('/') }}">Minha Loja</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
         @auth
-          <li class="nav-item">
-            <span class="nav-link text-white">Olá, {{ auth()->user()->name }}</span>
+          <li class="nav-item"><a class="nav-link active" href="/login">Login</a></li>
+            <form id="logout-form" action="/logout" method="POST" style="display: none;">
+              @csrf
+            </form>
           </li>
         @else
           <li class="nav-item"><a class="nav-link" href="{{ url('/login') }}">Login</a></li>
         @endauth
-
+        <li class="nav-item"><a class="nav-link" href="#">Produtos</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Contato</a></li>
-
         @auth
           <li class="nav-item">
             <a class="nav-link" href="{{ url('/carrinho') }}">
               <span aria-hidden="true">🛒</span>
-              <span class="badge bg-danger ms-1">{{ $cartCount ?? 0 }}</span>
+              <span class="badge bg-danger ms-1">{{ $cartCount }}</span>
             </a>
           </li>
         @else
           <li class="nav-item">
             <a class="nav-link" href="{{ url('/login') }}">
               <span aria-hidden="true">🛒</span>
-              <span class="badge bg-danger ms-1">{{ $cartCount ?? 0 }}</span>
+              <span class="badge bg-danger ms-1">{{ $cartCount }}</span>
             </a>
           </li>
         @endauth
       </ul>
-
-      <div class="d-flex align-items-center">
-        @auth
-          <form id="logout-form" action="/logout" method="POST" class="d-inline ms-auto">
-            @csrf
-            <button type="submit" class="btn btn-outline-light">Sair</button>
-          </form>
-        @endauth
-      </div>
     </div>
   </div>
 </nav>
@@ -212,6 +203,7 @@
       } else {
         document.querySelectorAll('.more-product').forEach(el => el.classList.add('d-none'));
         btn.textContent = 'Mostrar mais';
+        // scroll back to products grid top
         const grid = document.getElementById('products-grid');
         if (grid) grid.scrollIntoView({behavior: 'smooth'});
       }

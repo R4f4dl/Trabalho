@@ -19,7 +19,17 @@
 
     <div class="mb-3">
         <label class="form-label">Imagem:</label>
-        <input disabled value="{{ $Produto->imagem ?? '—' }}" type="text" class="form-control">
+        @if(is_array($Produto->imagem) && count($Produto->imagem))
+            <div class="d-flex gap-2">
+                @foreach($Produto->imagem as $img)
+                    <img src="{{ $img }}" style="max-width:120px; max-height:90px; object-fit:cover;" alt="img" />
+                @endforeach
+            </div>
+        @elseif($Produto->imagem)
+            <img src="{{ $Produto->imagem }}" style="max-width:120px; max-height:90px; object-fit:cover;" alt="img" />
+        @else
+            <input disabled value="—" type="text" class="form-control">
+        @endif
     </div>
 
     <div class="mb-3">
@@ -40,13 +50,13 @@
     {{-- Marca --}}
     <div class="mb-3">
         <label class="form-label">Marca:</label>
-        <input disabled value="{{ $Produto->Marca->Nome ?? '—' }}" type="text" class="form-control">
+        <input disabled value="{{ $Produto->marca->Nome ?? '—' }}" type="text" class="form-control">
     </div>
 
     {{-- Tipo --}}
     <div class="mb-3">
         <label class="form-label">Tipo:</label>
-        <input disabled value="{{ $Produto->Tipo->Nome ?? '—' }}" type="text" class="form-control">
+        <input disabled value="{{ $Produto->tipo->Nome ?? '—' }}" type="text" class="form-control">
     </div>
 
     {{-- Ações --}}
