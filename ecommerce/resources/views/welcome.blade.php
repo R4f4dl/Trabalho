@@ -57,7 +57,6 @@
         @else
           <li class="nav-item"><a class="nav-link" href="{{ url('/login') }}">Login</a></li>
         @endauth
-        <li class="nav-item"><a class="nav-link" href="#">Produtos</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Contato</a></li>
         @auth
           <li class="nav-item">
