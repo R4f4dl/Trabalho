@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Produto;
+use App\Models\Marca;
+use App\Models\Tipo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Pedido;
@@ -11,24 +13,133 @@ use App\Models\ItensPedido;
 
 class CarrinhoController extends Controller
 {
-    public function mostrarProdutos(){
-        $produtos = Produto::all();
-        return view('welcome', compact('produtos'));
+    public function mostrarProdutos(Request $request){
+        $query = Produto::with('marca', 'tipo');
+
+        // filtros simples por igualdade
+        if ($request->filled('tamanho')) {
+            $query->where('Tamanho', $request->tamanho);
+        }
+        if ($request->filled('cor')) {
+            $query->where('Cor', $request->cor);
+        }
+        if ($request->filled('genero')) {
+            $query->where('Genero', $request->genero);
+        }
+
+        // marca: aceita id ou nome parcial
+        if ($request->filled('marca')) {
+            $m = $request->marca;
+            if (is_numeric($m)) {
+                $query->where('id_marca', $m);
+            } else {
+                $query->whereHas('marca', function($q) use ($m) {
+                    $q->where('Nome', 'like', "%{$m}%");
+                });
+            }
+        }
+
+        // tipo: aceita id ou nome parcial
+        if ($request->filled('tipo')) {
+            $t = $request->tipo;
+            if (is_numeric($t)) {
+                $query->where('id_tipo', $t);
+            } else {
+                $query->whereHas('tipo', function($q) use ($t) {
+                    $q->where('Nome', 'like', "%{$t}%");
+                });
+            }
+        }
+
+        // preço: suporte para faixa (preco_min / preco_max) ou select base_valor (ex: 0-50, 50-100, 200+)
+        if ($request->filled('preco_min')) {
+            $query->where('Valor', '>=', (float) $request->preco_min);
+        }
+        if ($request->filled('preco_max')) {
+            $query->where('Valor', '<=', (float) $request->preco_max);
+        }
+        if ($request->filled('base_valor')) {
+            $bv = $request->base_valor;
+            if (strpos($bv, '+') !== false) {
+                $min = (float) rtrim($bv, '+');
+                $query->where('Valor', '>=', $min);
+            } elseif (strpos($bv, '-') !== false) {
+                [$min, $max] = explode('-', $bv);
+                $query->whereBetween('Valor', [(float)$min, (float)$max]);
+            }
+        }
+
+        $produtos = $query->get();
+
+        $marcas = Marca::all();
+        $tipos = Tipo::all();
+
+        return view('welcome', compact('produtos', 'marcas', 'tipos'));
     }
 
     /**
      * Mostrar a view do carrinho (cart.blade.php)
      */
-    public function mostrarCarrinho()
+    public function mostrarCarrinho(Request $request)
     {
         $pedido = Pedido::where('user_id', Auth::id())
                     ->where('status', 'aberto')
                     ->with('itens.produto')
                     ->first();
 
-        $produtos = Produto::with('marca')->get();
+        $query = Produto::with('marca', 'tipo');
+        if ($request->filled('tamanho')) {
+            $query->where('Tamanho', $request->tamanho);
+        }
+        if ($request->filled('cor')) {
+            $query->where('Cor', $request->cor);
+        }
+        if ($request->filled('genero')) {
+            $query->where('Genero', $request->genero);
+        }
+        if ($request->filled('marca')) {
+            $m = $request->marca;
+            if (is_numeric($m)) {
+                $query->where('id_marca', $m);
+            } else {
+                $query->whereHas('marca', function($q) use ($m) {
+                    $q->where('Nome', 'like', "%{$m}%");
+                });
+            }
+        }
+        if ($request->filled('tipo')) {
+            $t = $request->tipo;
+            if (is_numeric($t)) {
+                $query->where('id_tipo', $t);
+            } else {
+                $query->whereHas('tipo', function($q) use ($t) {
+                    $q->where('Nome', 'like', "%{$t}%");
+                });
+            }
+        }
+        if ($request->filled('preco_min')) {
+            $query->where('Valor', '>=', (float) $request->preco_min);
+        }
+        if ($request->filled('preco_max')) {
+            $query->where('Valor', '<=', (float) $request->preco_max);
+        }
+        if ($request->filled('base_valor')) {
+            $bv = $request->base_valor;
+            if (strpos($bv, '+') !== false) {
+                $min = (float) rtrim($bv, '+');
+                $query->where('Valor', '>=', $min);
+            } elseif (strpos($bv, '-') !== false) {
+                [$min, $max] = explode('-', $bv);
+                $query->whereBetween('Valor', [(float)$min, (float)$max]);
+            }
+        }
 
-        return view('cart', compact('pedido', 'produtos'));
+        $produtos = $query->get();
+
+        $marcas = Marca::all();
+        $tipos = Tipo::all();
+
+        return view('cart', compact('pedido', 'produtos', 'marcas', 'tipos'));
     }
 
     /**

@@ -102,6 +102,65 @@
   <div class="container">
     <h2 class="mb-4 text-center fw-semibold">Nossos Produtos</h2>
 
+    <!-- Filtro de produtos -->
+    <div class="mb-4">
+      <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end">
+        <div class="col-md-2">
+          <label class="form-label">Tamanho</label>
+          <input type="text" name="tamanho" value="{{ request('tamanho') }}" class="form-control" placeholder="Ex: M, G">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Cor</label>
+          <input type="text" name="cor" value="{{ request('cor') }}" class="form-control" placeholder="Ex: Preto">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Gênero</label>
+          <select name="genero" class="form-select">
+            <option value="">Todos</option>
+            <option value="Masculino" {{ request('genero')=='Masculino' ? 'selected' : '' }}>Masculino</option>
+            <option value="Feminino" {{ request('genero')=='Feminino' ? 'selected' : '' }}>Feminino</option>
+            <option value="Unissex" {{ request('genero')=='Unissex' ? 'selected' : '' }}>Unissex</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Marca</label>
+          <select name="marca" class="form-select">
+            <option value="">Todas</option>
+            @if(isset($marcas))
+              @foreach($marcas as $m)
+                <option value="{{ $m->id }}" {{ request('marca') == $m->id ? 'selected' : '' }}>{{ $m->Nome }}</option>
+              @endforeach
+            @endif
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Tipo</label>
+          <select name="tipo" class="form-select">
+            <option value="">Todos</option>
+            @if(isset($tipos))
+              @foreach($tipos as $t)
+                <option value="{{ $t->id }}" {{ request('tipo') == $t->id ? 'selected' : '' }}>{{ $t->Nome }}</option>
+              @endforeach
+            @endif
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Base de Valor</label>
+          <select name="base_valor" class="form-select">
+            <option value="">Qualquer</option>
+            <option value="0-50" {{ request('base_valor')=='0-50' ? 'selected' : '' }}>0 - 50</option>
+            <option value="50-100" {{ request('base_valor')=='50-100' ? 'selected' : '' }}>50 - 100</option>
+            <option value="100-200" {{ request('base_valor')=='100-200' ? 'selected' : '' }}>100 - 200</option>
+            <option value="200+" {{ request('base_valor')=='200+' ? 'selected' : '' }}>200+</option>
+          </select>
+        </div>
+        <div class="col-12 text-end mt-2">
+          <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+          <a href="{{ url()->current() }}" class="btn btn-link">Limpar</a>
+        </div>
+      </form>
+    </div>
+
     @if(isset($produtos) && count($produtos))
       <div class="row g-4" id="products-grid">
         @foreach($produtos as $p)
